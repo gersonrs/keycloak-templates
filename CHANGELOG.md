@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/gersonrs/keycloak-templates/compare/v1.1.0...v1.2.0) (2026-11-23)
+
+
+### 🚀 New Features
+
+* redesign modern-gitops login theme with stack identity ([b18a527](https://github.com/gersonrs/keycloak-templates/commit/b18a5271a07bd0b61ce07f5e250b2c3263c77ad4))
+
 ## [1.1.0](https://github.com/GersonRS/keycloak-templates/compare/v1.0.0...v1.1.0) (2026-02-08)
 
 
