@@ -1,42 +1,46 @@
 # Keycloak Templates
 
-Custom Keycloak themes for the Modern GitOps Stack.
+Temas customizados do Keycloak para o **Modern GitOps Stack**, alinhados à identidade visual oficial da documentação (`modern-gitops-stack-antora-ui`).
 
-## Themes
+## Tema `modern-gitops`
 
-### Modern GitOps Login Theme
+Portal de autenticação unificado construído com foco em **Showcase Centralizado**, paleta oficial Navy + Mint/Ciano Neon (`#0a192f`, `#64ffda`, `#00d4ff`, `#6356e5`) e textos em **Português (`pt-BR`)**.
 
-A modern, dark-themed login page designed for cloud-native infrastructure platforms.
+### Principais Características
 
-![Modern GitOps Login Theme](docs/images/login-preview.png)
+- **Showcase Unificado Centralizado (`1100px`)**: integra a vitrine arquitetural da stack (4 camadas: IaC & Multi-Cloud, GitOps & Service Mesh, Observabilidade, Data & MLOps) junto ao painel de login OIDC em um único container glassmorphism.
+- **Identidade Visual Oficial**: reproduz o logo vetorial do pipeline isométrico em curva "S", a paleta Navy/Mint do portal Antora e ícones vetoriais reais de Kubernetes, OpenTofu, Argo CD, Istio, Grafana e Keycloak OIDC.
+- **Experiência OIDC Inteligente**:
+  - Exibe dinamicamente o cliente OIDC solicitante (`SSO OIDC · <client>`).
+  - Oculta automaticamente a seção de SSO externo quando não há provedores configurados.
+  - Adapta o grid de provedores externos (`1 coluna` para SSO corporativo único ou `2 colunas` para múltiplos provedores como GitHub/Google/GitLab).
+- **Interatividade Segura (CSP-friendly)**: toggle de mostrar/ocultar senha e feedback de carregamento no envio via `js/modern-gitops.js`.
+- **Retrocompatibilidade**: `template.ftl` suporta modo `fullPage=true` (`login.ftl`, `error.ftl`) e modo compacto (`fullPage=false`) para fluxos nativos do Keycloak (redefinição de senha, OTP, atualização de perfil).
 
-#### Features
-
-- **Dark Mode Design**: Professional dark color scheme with cyan accents
-- **Split Layout**: Branding information on the left, login form on the right
-- **Animated Particles**: Subtle floating particle effects for a modern feel
-- **Responsive**: Adapts to mobile and tablet screens
-- **Social Login**: Styled buttons for GitHub, Google, and other providers
-- **Accessibility**: ARIA attributes and keyboard navigation support
-
-#### Theme Structure
+### Estrutura do Tema
 
 ```
 themes/
 └── modern-gitops/
     └── login/
-        ├── theme.properties      # Theme configuration
-        ├── login.ftl             # FreeMarker login template
+        ├── theme.properties                # parent=keycloak, styles e scripts
+        ├── template.ftl                    # Layout base híbrido (showcase + fallback Keycloak)
+        ├── login.ftl                       # Tela principal de login em pt-BR
+        ├── error.ftl                       # Tela de diagnóstico de erro
         └── resources/
-            └── css/
-                └── modern-gitops.css  # Custom styles
+            ├── css/
+            │   └── modern-gitops.css       # Design system oficial da stack
+            ├── img/
+            │   └── favicon.svg             # Ícone oficial do pipeline em SVG
+            └── js/
+                └── modern-gitops.js        # Toggle de senha e estado de carregamento
 ```
 
-## Usage
+## Uso
 
-### With Keycloak Operator (Kubernetes)
+### Com Keycloak Operator (Kubernetes)
 
-The theme can be loaded using an initContainer that clones this repository:
+O tema pode ser carregado via `initContainer` clonando este repositório:
 
 ```yaml
 apiVersion: k8s.keycloak.org/v2alpha1
@@ -46,7 +50,7 @@ metadata:
 spec:
   instances: 1
   additionalOptions:
-    - name: spi-theme-default
+    - name: spi-theme-login-default
       value: "modern-gitops"
   unsupported:
     podTemplate:
@@ -79,12 +83,12 @@ spec:
             emptyDir: {}
 ```
 
-### With Terraform (Modern GitOps Stack Module)
+### Com Terraform (`modern-gitops-stack-module-keycloak`)
 
 ```hcl
 module "keycloak" {
   source = "github.com/GersonRS/modern-gitops-stack-module-keycloak"
-  
+
   enable_custom_theme = true
   theme_config = {
     name              = "modern-gitops"
@@ -95,50 +99,22 @@ module "keycloak" {
 }
 ```
 
-### Standalone Keycloak
+### Keycloak Standalone
 
-Copy the theme folder to your Keycloak installation:
+Copie a pasta do tema para o diretório de temas do Keycloak:
 
 ```bash
 cp -r themes/modern-gitops /opt/keycloak/themes/
 ```
 
-Then configure the theme in the Admin Console:
-1. Go to **Realm Settings** > **Themes**
-2. Select **modern-gitops** for the Login Theme
-3. Save
+No Admin Console:
+1. Acesse **Realm Settings** > **Themes**
+2. Selecione **modern-gitops** em **Login Theme**
+3. Salve as alterações
 
-## Customization
+## Desenvolvimento Local
 
-### Colors
-
-Edit the CSS variables in `themes/modern-gitops/login/resources/css/modern-gitops.css`:
-
-```css
-:root {
-  --mg-bg-primary: #0a0e17;      /* Main background */
-  --mg-bg-secondary: #111827;    /* Secondary background */
-  --mg-bg-card: #1a2332;         /* Card background */
-  --mg-text-primary: #ffffff;    /* Primary text */
-  --mg-text-secondary: #9ca3af;  /* Secondary text */
-  --mg-accent-cyan: #00d4ff;     /* Accent color */
-  --mg-accent-blue: #3b82f6;     /* Secondary accent */
-}
-```
-
-### Branding
-
-Modify the `login.ftl` template to update:
-- Logo SVG
-- Brand name
-- Feature list
-- Footer logos
-
-## Development
-
-### Testing Locally
-
-1. Run Keycloak with theme caching disabled:
+Execute o Keycloak com cache de tema desabilitado para visualizar alterações em tempo real:
 
 ```bash
 bin/kc.sh start-dev \
@@ -147,10 +123,6 @@ bin/kc.sh start-dev \
   --spi-theme-cache-templates=false
 ```
 
-2. Copy your theme to the `themes/` directory
-3. Select the theme in Admin Console
-4. Changes will be reflected on page refresh
-
-## License
+## Licença
 
 Apache License 2.0
